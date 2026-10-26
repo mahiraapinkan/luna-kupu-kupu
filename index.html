@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luna, Kupu-Kupu Pelangi</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: "Segoe UI", Arial, Helvetica, sans-serif; color: #3b0764;
+    background: linear-gradient(180deg, #fdf4ff 0%, #e0e7ff 45%, #ddd6fe 100%);
+    min-height: 100vh;
+  }
+  main { max-width: 1020px; margin: 0 auto; padding: 30px 20px 44px; }
+  .pill {
+    display: inline-block; background: #fff; border: 1px solid #e9d5ff; color: #7c3aed;
+    padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: bold; letter-spacing: 1px;
+  }
+  h1 {
+    text-align: center; font-size: 58px; line-height: 1.02; margin: 16px 0 10px;
+    background: linear-gradient(90deg, #ec4899, #8b5cf6, #3b82f6);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  @media (max-width: 700px) { h1 { font-size: 40px; } }
+  .tagline { text-align: center; color: #6b21a8; font-size: 17px; margin: 0 0 24px; }
+  .tagline b { color: #db2777; }
+
+  /* Panggung taman senja — beda total dari contoh: terang, pastel, satu panggung lebar */
+  .panggung {
+    position: relative; height: 470px; overflow: hidden; border-radius: 36px;
+    background: linear-gradient(#c4b5fd 0%, #f0abfc 42%, #93c5fd 78%, #c4b5fd 100%);
+    border: 3px solid #fff; box-shadow: 0 20px 50px rgba(139, 92, 246, .28);
+  }
+  .bintang { position: absolute; color: #fff; opacity: .95; animation: kelip 2.2s ease-in-out infinite alternate; }
+  @keyframes kelip { from { opacity: .35; transform: scale(.7); } to { opacity: 1; transform: scale(1.15); } }
+  .bulan {
+    position: absolute; top: 24px; right: 30px; width: 66px; height: 66px; border-radius: 50%;
+    background: #fef9c3; box-shadow: 0 0 0 14px rgba(254, 249, 195, .35), 0 0 40px #fde68a;
+  }
+  .awan-pink {
+    position: absolute; top: 56px; background: rgba(255,255,255,.85); padding: 12px 26px;
+    border-radius: 999px; animation: awan 30s linear infinite;
+  }
+  .awan-pink.a2 { top: 110px; animation-duration: 42s; transform: scale(.75); }
+  @keyframes awan { from { left: -160px; } to { left: 105%; } }
+  .tanah {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 86px;
+    background: linear-gradient(#a78bfa, #7c3aed); border-radius: 50% 50% 0 0 / 30px 30px 0 0;
+  }
+  .bunga-panggung {
+    position: absolute; bottom: 62px; z-index: 2; text-align: center; cursor: pointer;
+    background: rgba(255,255,255,.85); border-radius: 18px; padding: 8px 10px;
+  }
+  .bunga-panggung span { font-size: 42px; display: block; line-height: 1; }
+  .bunga-panggung small { font-size: 12px; font-weight: bold; color: #581c87; }
+  .bunga-panggung.pilih { outline: 4px solid #f472b6; box-shadow: 0 0 0 6px rgba(244, 114, 182, .3); }
+  .bunga-panggung.f1 { left: 6%; } .bunga-panggung.f2 { left: 44%; } .bunga-panggung.f3 { right: 6%; }
+
+  /* Luna si kupu-kupu */
+  #luna {
+    position: absolute; width: 118px; height: 98px; z-index: 3; left: 10%; bottom: 14%;
+    cursor: pointer; filter: drop-shadow(0 10px 10px rgba(88, 28, 135, .35));
+  }
+  #luna svg { width: 100%; height: 100%; overflow: visible; }
+  .sayap-kiri, .sayap-kanan { transform-box: fill-box; }
+  .sayap-kiri { transform-origin: 100% 50%; }
+  .sayap-kanan { transform-origin: 0% 50%; }
+  #luna.terbang .sayap-kiri { animation: kepak .34s ease-in-out infinite alternate; }
+  #luna.terbang .sayap-kanan { animation: kepak .34s ease-in-out infinite alternate; }
+  @keyframes kepak { from { transform: scaleX(1); } to { transform: scaleX(.35); } }
+  .jejak {
+    position: absolute; z-index: 2; color: #fde047; pointer-events: none;
+    animation: jejak-hilang 1s ease-out forwards; text-shadow: 0 0 8px #f0abfc;
+  }
+  @keyframes jejak-hilang { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(18px) scale(.4); } }
+  .nama-luna {
+    position: absolute; left: 18px; top: 16px; z-index: 4; background: rgba(255,255,255,.9);
+    color: #7c3aed; padding: 8px 14px; border-radius: 999px; font-weight: bold;
+  }
+
+  /* Dock kontrol di bawah panggung, bukan panel samping seperti contoh */
+  .dock {
+    margin-top: -28px; position: relative; z-index: 5;
+    background: rgba(255,255,255,.92); border: 1px solid #e9d5ff; border-radius: 26px;
+    padding: 18px; box-shadow: 0 14px 34px rgba(139, 92, 246, .22);
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center;
+  }
+  button, select {
+    border: 0; border-radius: 999px; padding: 12px 18px; font-size: 15px; font-weight: bold; cursor: pointer;
+  }
+  .btn-utama { background: linear-gradient(90deg, #ec4899, #8b5cf6, #3b82f6); color: #fff; }
+  .btn-putih { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+  .btn-putih.nonaktif { background: #fff; color: #a78bfa; }
+  select { background: #fdf4ff; color: #7c3aed; border: 1px solid #f0abfc; }
+  .volume { display: flex; align-items: center; gap: 8px; color: #7c3aed; font-weight: bold; }
+  .volume input { accent-color: #a855f7; width: 130px; }
+  .info {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 18px 0 4px;
+  }
+  .info span { background: #fff; border: 1px solid #e9d5ff; border-radius: 999px; padding: 8px 14px; font-size: 14px; }
+  .info b { color: #db2777; }
+  #status { text-align: center; font-weight: bold; color: #6d28d9; min-height: 24px; margin: 12px 0 0; }
+
+  .jejak-box { background: #fff; border: 1px solid #e9d5ff; border-radius: 26px; padding: 20px; margin-top: 20px; }
+  .jejak-box h2 { margin: 0 0 4px; color: #7c3aed; }
+  .jejak-box p { margin: 0 0 12px; color: #a21caf; font-size: 14px; }
+  canvas { width: 100%; height: 150px; display: block; background: linear-gradient(90deg, #fdf4ff, #eff6ff); border-radius: 16px; }
+  .sumbu { display: flex; justify-content: space-between; color: #9333ea; font-size: 13px; margin-top: 8px; }
+  .tiga { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+  @media (max-width: 700px) { .tiga { grid-template-columns: 1fr; } }
+  .kartu { background: #fff; border-radius: 22px; padding: 18px; border-top: 6px solid #ec4899; }
+  .kartu:nth-child(2) { border-top-color: #8b5cf6; }
+  .kartu:nth-child(3) { border-top-color: #3b82f6; }
+  .kartu h2 { font-size: 17px; margin: 0 0 8px; }
+  .kartu p { font-size: 14px; line-height: 1.65; margin: 0; color: #581c87; }
+  .catatan { text-align: center; color: #9333ea; font-size: 13px; line-height: 1.6; margin-top: 18px; }
+</style>
+</head>
+<body>
+<main>
+  <div style="text-align:center;"><span class="pill">PROYEK MULTIMEDIA &nbsp;•&nbsp; KUPU-KUPU</span></div>
+  <h1>Luna, Kupu-Kupu<br>Pelangi</h1>
+  <p class="tagline">Namanya <b>Luna</b>. Ia terbang di taman senja pink-biru-ungu, meninggalkan <b>jejak bintang</b> di belakangnya.</p>
+
+  <section class="panggung" id="panggung" aria-label="Taman senja Luna">
+    <div class="nama-luna" id="label-fase">✦ Luna siap terbang</div>
+    <div class="bulan" aria-hidden="true"></div>
+    <div class="awan-pink" aria-hidden="true"></div>
+    <div class="awan-pink a2" aria-hidden="true"></div>
+    <span class="bintang" style="left:12%;top:18%;font-size:20px;">✦</span>
+    <span class="bintang" style="left:32%;top:10%;font-size:14px;animation-delay:.6s;">✧</span>
+    <span class="bintang" style="left:58%;top:22%;font-size:22px;animation-delay:1.1s;">✦</span>
+    <span class="bintang" style="left:78%;top:12%;font-size:15px;animation-delay:.3s;">✧</span>
+    <div class="tanah" aria-hidden="true"></div>
+
+    <div class="bunga-panggung f1" id="bunga-pink" role="button" tabindex="0" title="Kembali ke bunga Pink"><span>🌸</span><small>Bunga Pink</small></div>
+    <div class="bunga-panggung f2" id="bunga-biru" role="button" tabindex="0" title="Terbang ke bunga Biru"><span>💠</span><small>Bunga Biru</small></div>
+    <div class="bunga-panggung f3 pilih" id="bunga-ungu" role="button" tabindex="0" title="Terbang ke bunga Ungu"><span>🪻</span><small>Bunga Ungu</small></div>
+
+    <div id="luna" role="button" tabindex="0" title="Ketuk Luna untuk mengulang terbang" aria-label="Luna si kupu-kupu, ketuk untuk mengulang">
+      <svg viewBox="0 0 120 100" aria-hidden="true">
+        <defs>
+          <linearGradient id="grad-kiri" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ec4899"></stop><stop offset="100%" stop-color="#8b5cf6"></stop>
+          </linearGradient>
+          <linearGradient id="grad-kanan" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#8b5cf6"></stop><stop offset="100%" stop-color="#3b82f6"></stop>
+          </linearGradient>
+        </defs>
+        <g class="sayap-kiri">
+          <path d="M58 48 C32 6 4 12 12 38 C18 56 40 54 58 48 Z" fill="url(#grad-kiri)"></path>
+          <path d="M58 54 C36 62 14 68 22 84 C30 96 50 74 58 54 Z" fill="#f472b6"></path>
+          <circle cx="30" cy="34" r="5" fill="#fff"></circle><circle cx="38" cy="72" r="3.5" fill="#fde047"></circle>
+        </g>
+        <g class="sayap-kanan">
+          <path d="M62 48 C88 6 116 12 108 38 C102 56 80 54 62 48 Z" fill="url(#grad-kanan)"></path>
+          <path d="M62 54 C84 62 106 68 98 84 C90 96 70 74 62 54 Z" fill="#60a5fa"></path>
+          <circle cx="90" cy="34" r="5" fill="#fff"></circle><circle cx="82" cy="72" r="3.5" fill="#fde047"></circle>
+        </g>
+        <ellipse cx="60" cy="52" rx="6" ry="22" fill="#4c1d95"></ellipse>
+        <circle cx="60" cy="28" r="7" fill="#4c1d95"></circle>
+        <path d="M55 22 C50 10 44 8 42 6 M65 22 C70 10 76 8 78 6" stroke="#4c1d95" stroke-width="2.5" fill="none" stroke-linecap="round"></path>
+      </svg>
+    </div>
+  </section>
+
+  <div class="dock">
+    <button class="btn-utama" id="btn-mulai" type="button">✦ Mulai Terbang</button>
+    <button class="btn-putih" id="btn-jeda" type="button">Jeda</button>
+    <button class="btn-putih" id="btn-suara" type="button">🔊 Suara: Hidup</button>
+    <button class="btn-putih" id="btn-jejak" type="button">✦ Jejak Bintang: Hidup</button>
+    <label style="font-weight:bold;color:#7c3aed;">Kecepatan
+      <select id="kecepatan" aria-label="Kecepatan terbang">
+        <option value="10">Santai (10 dtk)</option>
+        <option value="8" selected>Normal (8 dtk)</option>
+        <option value="6">Cepat (6 dtk)</option>
+      </select>
+    </label>
+    <div class="volume"><span>Volume</span><input id="volume" type="range" min="0" max="100" value="80" aria-label="Volume"><span id="nilai-volume">80%</span></div>
+  </div>
+
+  <div class="info">
+    <span>Waktu: <b id="info-waktu">0,0 / 8,0 dtk</b></span>
+    <span>Ketinggian: <b id="info-tinggi">0%</b></span>
+    <span>Tujuan: <b id="info-tujuan">Bunga Ungu 🪻</b></span>
+  </div>
+  <p id="status">Pilih bunga tujuan dulu, atau langsung tekan Mulai Terbang. Ketuk Luna untuk mengulang.</p>
+
+  <section class="jejak-box" aria-label="Jejak terbang Luna">
+    <h2>✦ Jejak Terbang Luna</h2>
+    <p>Grafik ketinggian Luna dari lepas landas sampai hinggap. Bintang-bintang kecil menandai bunyi lonceng yang terdengar saat ia lewat.</p>
+    <canvas id="grafik" width="640" height="300"></canvas>
+    <div class="sumbu"><span>0 dtk</span><span>ketinggian terbang Luna</span><span id="label-akhir">8,0 dtk</span></div>
+    <p style="color:#7c3aed;font-size:14px;margin-top:12px;">Tips: klik bunga Biru atau Ungu di panggung untuk mengganti tujuan Luna sebelum terbang.</p>
+  </section>
+
+  <div class="tiga">
+    <article class="kartu"><h2>1. Gambar (Visual)</h2><p>Luna, kupu-kupu bersayap gradasi pink–ungu–biru, di taman senja: bulan, bintang berkelip, awan pink, dan tiga bunga berwarna.</p></article>
+    <article class="kartu"><h2>2. Suara (Audio)</h2><p>Kepakan sayap lembut plus lonceng kotak musik bernada pentatonik setiap Luna melewati bintang. Kupu-kupu asli tidak bersuara, jadi ini efek ilustrasi.</p></article>
+    <article class="kartu"><h2>3. Gerak (Animasi)</h2><p>Luna lepas landas, terbang berayun sambil mengepakkan sayap, meninggalkan jejak bintang, lalu hinggap tepat di bunga yang dipilih.</p></article>
+  </div>
+</main>
+
+<script>
+  var luna = document.getElementById('luna');
+  var panggung = document.getElementById('panggung');
+  var statusEl = document.getElementById('status');
+  var labelFase = document.getElementById('label-fase');
+  var infoWaktu = document.getElementById('info-waktu');
+  var infoTinggi = document.getElementById('info-tinggi');
+  var infoTujuan = document.getElementById('info-tujuan');
+  var labelAkhir = document.getElementById('label-akhir');
+  var btnMulai = document.getElementById('btn-mulai');
+  var btnJeda = document.getElementById('btn-jeda');
+  var btnSuara = document.getElementById('btn-suara');
+  var btnJejak = document.getElementById('btn-jejak');
+  var kecepatanEl = document.getElementById('kecepatan');
+  var volumeEl = document.getElementById('volume');
+  var nilaiVolume = document.getElementById('nilai-volume');
+  var kanvas = document.getElementById('grafik');
+  var ctx = kanvas.getContext('2d');
+
+  var DURASI = 8, keadaan = 'siap', raf = null, waktuMulai = 0, waktuJeda = 0;
+  var xAwal = 10, xTujuan = 82, labelTujuan = 'Bunga Ungu 🪻';
+  var jejakAktif = true, terakhirJejak = -1, loncengSudah = {};
+
+  function ketinggian(t) {
+    if (t < 0.15) { var p = t / 0.15; return 0.65 * (1 - Math.pow(1 - p, 2)); }
+    if (t < 0.85) { return 0.65 + 0.15 * Math.sin((t - 0.15) / 0.70 * Math.PI * 3); }
+    var q = (t - 0.85) / 0.15; return Math.max(0, 0.65 * (1 - q * q));
+  }
+  function halus(t) { return t * t * (3 - 2 * t); }
+
+  function gambarGrafik(tSekarang) {
+    var W = kanvas.width, H = kanvas.height, pad = 36;
+    ctx.clearRect(0, 0, W, H);
+    var grad = ctx.createLinearGradient(pad, 0, W - pad, 0);
+    grad.addColorStop(0, '#ec4899'); grad.addColorStop(0.5, '#8b5cf6'); grad.addColorStop(1, '#3b82f6');
+    ctx.beginPath();
+    for (var i = 0; i <= 200; i++) {
+      var t = i / 200, x = pad + t * (W - 2 * pad), y = (H - pad) - ketinggian(t) * (H - 2 * pad);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = grad; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.stroke();
+    ctx.lineTo(W - pad, H - pad); ctx.lineTo(pad, H - pad); ctx.closePath();
+    ctx.fillStyle = 'rgba(168,85,247,.14)'; ctx.fill();
+    [0.25, 0.5, 0.75].forEach(function (t) {
+      var x = pad + t * (W - 2 * pad), y = (H - pad) - ketinggian(t) * (H - 2 * pad);
+      ctx.fillStyle = '#f59e0b'; ctx.font = '22px Arial'; ctx.textAlign = 'center';
+      ctx.fillText('✦', x, y - 10);
+    });
+    if (tSekarang !== null) {
+      var mx = pad + tSekarang * (W - 2 * pad), my = (H - pad) - ketinggian(tSekarang) * (H - 2 * pad);
+      ctx.strokeStyle = '#c026d3'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(mx, pad - 8); ctx.lineTo(mx, H - pad); ctx.stroke();
+      ctx.fillStyle = '#ec4899'; ctx.beginPath(); ctx.arc(mx, my, 9, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(mx, my, 4, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  function buatJejak(xPersen, bawahPersen) {
+    if (!jejakAktif) return;
+    var s = document.createElement('span');
+    s.className = 'jejak'; s.textContent = Math.random() > 0.5 ? '✦' : '✧';
+    s.style.left = (xPersen + 5) + '%'; s.style.bottom = (bawahPersen + 6) + '%';
+    s.style.fontSize = (12 + Math.random() * 12) + 'px';
+    panggung.appendChild(s);
+    s.addEventListener('animationend', function () { s.remove(); });
+  }
+
+  function tampilkan(t) {
+    var tinggi = ketinggian(t);
+    var x = xAwal + (xTujuan - xAwal) * halus(t) + 1.5 * Math.sin(t * Math.PI * 6);
+    var bawah = 14 + tinggi * 52;
+    luna.style.left = x + '%'; luna.style.bottom = bawah + '%';
+    infoWaktu.textContent = (t * DURASI).toFixed(1).replace('.', ',') + ' / ' + DURASI.toFixed(1).replace('.', ',') + ' dtk';
+    infoTinggi.textContent = Math.round(tinggi * 100) + '%';
+    gambarGrafik(t);
+    if (t - terakhirJejak > 0.03) { buatJejak(x, bawah); terakhirJejak = t; }
+    [0.25, 0.5, 0.75].forEach(function (ambang, idx) {
+      if (t >= ambang && !loncengSudah[ambang]) { loncengSudah[ambang] = true; mainkanLonceng([523.25, 659.25, 783.99][idx]); }
+    });
+    if (t < 0.15) labelFase.textContent = '✦ Luna lepas landas…';
+    else if (t < 0.85) labelFase.textContent = '✦ Luna terbang meninggalkan jejak bintang…';
+    else labelFase.textContent = '✦ Luna hinggap di ' + labelTujuan;
+  }
+
+  function putar(waktu) {
+    var t = Math.min(1, waktu / DURASI);
+    tampilkan(t);
+    if (t >= 1) {
+      keadaan = 'selesai'; luna.classList.remove('terbang');
+      statusEl.textContent = 'Selesai! Luna hinggap di ' + labelTujuan + '. Pilih bunga lain, lalu tekan Mulai Terbang lagi.';
+      btnJeda.textContent = 'Jeda'; aturAudioTerbang(false); return;
+    }
+    raf = requestAnimationFrame(function (now) { putar((now - waktuMulai) / 1000); });
+  }
+
+  function mulaiDariAwal() {
+    cancelAnimationFrame(raf); loncengSudah = {}; terakhirJejak = -1;
+    keadaan = 'terbang'; waktuMulai = performance.now();
+    luna.classList.add('terbang');
+    statusEl.textContent = 'Luna terbang menuju ' + labelTujuan + '…';
+    btnJeda.textContent = 'Jeda'; mulaiAudio(); aturAudioTerbang(true);
+    raf = requestAnimationFrame(function (now) { putar((now - waktuMulai) / 1000); });
+  }
+  function jeda() {
+    if (keadaan !== 'terbang') return;
+    cancelAnimationFrame(raf); waktuJeda = (performance.now() - waktuMulai) / 1000;
+    keadaan = 'jeda'; luna.classList.remove('terbang');
+    statusEl.textContent = 'Dijeda. Tekan Lanjutkan untuk melanjutkan terbang Luna.';
+    btnJeda.textContent = 'Lanjutkan'; aturAudioTerbang(false);
+  }
+  function lanjutAtauJeda() {
+    if (keadaan === 'terbang') { jeda(); return; }
+    if (keadaan === 'jeda') {
+      keadaan = 'terbang'; waktuMulai = performance.now() - waktuJeda * 1000;
+      luna.classList.add('terbang'); statusEl.textContent = 'Luna terbang lagi…';
+      btnJeda.textContent = 'Jeda'; aturAudioTerbang(true);
+      raf = requestAnimationFrame(function (now) { putar((now - waktuMulai) / 1000); }); return;
+    }
+    mulaiDariAwal();
+  }
+
+  function pilihTujuan(x, label, el) {
+    xTujuan = x; labelTujuan = label; infoTujuan.textContent = label;
+    document.querySelectorAll('.bunga-panggung').forEach(function (b) { b.classList.remove('pilih'); });
+    if (el) el.classList.add('pilih');
+    if (keadaan !== 'terbang') statusEl.textContent = 'Tujuan Luna sekarang: ' + label + '. Tekan Mulai Terbang.';
+  }
+  function kembaliKePink() {
+    cancelAnimationFrame(raf); keadaan = 'siap'; luna.classList.remove('terbang');
+    xTujuan = 82; labelTujuan = 'Bunga Ungu 🪻'; infoTujuan.textContent = labelTujuan;
+    document.querySelectorAll('.bunga-panggung').forEach(function (b) { b.classList.remove('pilih'); });
+    document.getElementById('bunga-ungu').classList.add('pilih');
+    tampilkan(0); statusEl.textContent = 'Luna kembali ke Bunga Pink. Pilih tujuan, lalu tekan Mulai Terbang.';
+  }
+
+  // ---- Audio: kepakan + lonceng kotak musik, tanpa file eksternal ----
+  var audioCtx = null, masterGain = null, flutterGain = null;
+  var suaraAktif = true, volume = 0.8;
+  function mulaiAudio() {
+    if (audioCtx) { if (audioCtx.state === 'suspended') audioCtx.resume(); return; }
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain(); masterGain.gain.value = suaraAktif ? volume : 0;
+      masterGain.connect(audioCtx.destination);
+      var len = audioCtx.sampleRate * 2, buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate), data = buf.getChannelData(0);
+      for (var i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+      var kepak = audioCtx.createBufferSource(); kepak.buffer = buf; kepak.loop = true;
+      var band = audioCtx.createBiquadFilter(); band.type = 'bandpass'; band.frequency.value = 1200; band.Q.value = 1.2;
+      flutterGain = audioCtx.createGain(); flutterGain.gain.value = 0;
+      kepak.connect(band); band.connect(flutterGain); flutterGain.connect(masterGain); kepak.start();
+      var lfo = audioCtx.createOscillator(); lfo.frequency.value = 9;
+      var lfoGain = audioCtx.createGain(); lfoGain.gain.value = 0.05;
+      lfo.connect(lfoGain); lfoGain.connect(flutterGain.gain); lfo.start();
+    } catch (e) {}
+  }
+  function aturAudioTerbang(terbang) {
+    if (flutterGain && audioCtx) flutterGain.gain.setTargetAtTime(terbang ? 0.08 : 0, audioCtx.currentTime, 0.15);
+  }
+  function mainkanLonceng(freq) {
+    if (!suaraAktif || !audioCtx || !masterGain) return;
+    var osc = audioCtx.createOscillator(); osc.type = 'triangle'; osc.frequency.value = freq;
+    var g = audioCtx.createGain(), now = audioCtx.currentTime;
+    g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(0.12, now + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+    osc.connect(g); g.connect(masterGain); osc.start(now); osc.stop(now + 1);
+  }
+
+  btnMulai.addEventListener('click', function () {
+    if (keadaan === 'jeda') lanjutAtauJeda(); else mulaiDariAwal();
+  });
+  btnJeda.addEventListener('click', lanjutAtauJeda);
+  btnSuara.addEventListener('click', function () {
+    suaraAktif = !suaraAktif;
+    btnSuara.textContent = suaraAktif ? '🔊 Suara: Hidup' : '🔇 Suara: Mati';
+    btnSuara.classList.toggle('nonaktif', !suaraAktif);
+    if (suaraAktif) mulaiAudio();
+    if (masterGain && audioCtx) masterGain.gain.setTargetAtTime(suaraAktif ? volume : 0, audioCtx.currentTime, 0.05);
+  });
+  btnJejak.addEventListener('click', function () {
+    jejakAktif = !jejakAktif;
+    btnJejak.textContent = jejakAktif ? '✦ Jejak Bintang: Hidup' : '✦ Jejak Bintang: Mati';
+    btnJejak.classList.toggle('nonaktif', !jejakAktif);
+  });
+  kecepatanEl.addEventListener('change', function () {
+    DURASI = parseFloat(kecepatanEl.value);
+    labelAkhir.textContent = DURASI.toFixed(1).replace('.', ',') + ' dtk';
+    if (keadaan !== 'terbang') { tampilkan(0); statusEl.textContent = 'Kecepatan diubah. Tekan Mulai Terbang untuk penerbangan ' + DURASI + ' detik.'; }
+  });
+  volumeEl.addEventListener('input', function () {
+    volume = volumeEl.value / 100; nilaiVolume.textContent = volumeEl.value + '%';
+    if (masterGain && audioCtx && suaraAktif) masterGain.gain.setTargetAtTime(volume, audioCtx.currentTime, 0.05);
+  });
+  document.getElementById('bunga-biru').addEventListener('click', function () { pilihTujuan(48, 'Bunga Biru 💠', this); });
+  document.getElementById('bunga-ungu').addEventListener('click', function () { pilihTujuan(82, 'Bunga Ungu 🪻', this); });
+  document.getElementById('bunga-pink').addEventListener('click', kembaliKePink);
+  luna.addEventListener('click', mulaiDariAwal);
+  luna.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); mulaiDariAwal(); } });
+
+  tampilkan(0);
+</script>
+</body>
+</html>
